@@ -12,6 +12,11 @@ defmodule ElixirPackage do
     else
       Logger.error("Failed to start ElixirPackage!")
     end
+
+    children = []
+
+    opts = [strategy: :one_for_one, name: ElixirPackage.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 
   def stop(_state) do

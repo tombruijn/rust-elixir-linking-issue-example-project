@@ -11,7 +11,7 @@ defmodule ElixirApp.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :elixir_package]]
   end
 
   defp deps do
