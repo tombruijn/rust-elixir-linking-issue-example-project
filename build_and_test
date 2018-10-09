@@ -26,20 +26,29 @@ fi
 
 export TARGET_TRIPLE=x86_64-unknown-linux-musl
 
+echo
 echo "Creating build machine."
-vagrant up cross
-vagrant ssh cross -c "which cross || cargo install cross"
+(
+  cd rust_lib
+  vagrant up cross
+  vagrant ssh cross -c "which cross || cargo install cross"
+)
 
 rm -rf build
 mkdir build
 
+echo
 echo "Building Rust extension."
-vagrant ssh cross -c "/rust_lib/build_in_vm $RUST_VERSION $TARGET_TRIPLE"
+(
+  cd rust_lib
+  vagrant ssh cross -c "/rust_lib/build_in_vm $RUST_VERSION $TARGET_TRIPLE"
+)
 
 rm -f elixir_app/elixir_package/c_src/libelixir_package_extension.a
 cp rust_lib/target/$TARGET_TRIPLE/release/libelixir_package_extension.a elixir_app/elixir_package/c_src
 
-echo "Building Elixir app release."
+echo
+echo "Building and running Elixir app release."
 export PROJECT_NAME=elixir_app
 (
   cd elixir_app

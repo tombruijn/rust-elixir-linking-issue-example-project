@@ -21,7 +21,7 @@ Vagrant.configure(2) do |config|
   config.vm.usable_port_range = 10_000..50_000
   # Disable vagrant's default synced folder
   config.vm.synced_folder "./", "/vagrant", :disabled => true
-  config.vm.synced_folder "./rust_lib", "/rust_lib", :type => "nfs"
+  config.vm.synced_folder "./", "/rust_lib", :type => "nfs"
 end
 
 def cross_provision_script
