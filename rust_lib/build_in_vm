@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -eu
+
+if [[ -n "$1" ]]; then
+  RUST_VERSION="$1"
+else
+  echo "Error: No Rust version set."
+  exit 1
+fi
+
+if [[ -n "$2" ]]; then
+  TARGET_TRIPLE="$2"
+else
+  echo "Error: No TARGET_TRIPLE set."
+  exit 1
+fi
+
+cd /rust_lib
+rustup override set $RUST_VERSION
+rustup target install $TARGET_TRIPLE
+export RUSTFLAGS='-C target-feature=-crt-static'
+cross build --target=$TARGET_TRIPLE --release --verbose

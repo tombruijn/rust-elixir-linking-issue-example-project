@@ -1,40 +1,48 @@
 #!/bin/bash
 
-if [[ -n "$1" ]]; then
+set -eu
+
+if [[ -n "${1-}" ]]; then
   RUST_VERSION="$1"
 else
   echo "Error: No Rust version set."
   echo
   echo "Usage:"
-  echo "  ./build_and_test <version>"
-  echo "  ./build_and_test 1.10.0"
+  echo "  ./build_and_test <Rust version> <build version>"
+  echo "  ./build_and_test 1.29.1 0.0.1"
   exit 1
 fi
+
+if [[ -n "${2-}" ]]; then
+  BUILD_VERSION="$2"
+else
+  echo "Error: No build version set."
+  echo
+  echo "Usage:"
+  echo "  ./build_and_test <Rust version> <build version>"
+  echo "  ./build_and_test 1.29.1 0.0.1"
+  exit 1
+fi
+
+export TARGET_TRIPLE=x86_64-unknown-linux-musl
+
+echo "Creating build machine."
+vagrant up cross
+vagrant ssh cross -c "which cross || cargo install cross"
 
 rm -rf build
 mkdir build
 
-(
-  cd rust_lib
-  rustup override set $RUST_VERSION
-  cargo build --release
-)
+echo "Building Rust extension."
+vagrant ssh cross -c "/rust_lib/build_in_vm $RUST_VERSION $TARGET_TRIPLE"
 
-cp rust_lib/target/release/libelixir_package_extension.a elixir_app/elixir_package/c_src
+rm -f elixir_app/elixir_package/c_src/libelixir_package_extension.a
+cp rust_lib/target/$TARGET_TRIPLE/release/libelixir_package_extension.a elixir_app/elixir_package/c_src
 
+echo "Building Elixir app release."
 export PROJECT_NAME=elixir_app
 (
   cd elixir_app
-
-  export MIX_ENV=prod
-  export BUILD_VERSION=0.0.1
-  mix deps.get
-  mix release
-  cp _build/prod/rel/$PROJECT_NAME/releases/$BUILD_VERSION/$PROJECT_NAME.tar.gz ../build/
-)
-
-(
-  cd build
-  tar -zxvf $PROJECT_NAME.tar.gz; rm $PROJECT_NAME.tar.gz
-  ./bin/$PROJECT_NAME foreground
+  docker build --build-arg BUILD_VERSION=$BUILD_VERSION -t alpine-elixir-build-test:build .
+  docker run -e BUILD_VERSION=$BUILD_VERSION -it --rm alpine-elixir-build-test:build ash
 )

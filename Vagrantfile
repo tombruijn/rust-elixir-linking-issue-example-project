@@ -1,0 +1,76 @@
+Vagrant.configure(2) do |config|
+  config.vm.define "cross" do |box|
+    box.vm.box = "bento/ubuntu-16.04"
+    box.vm.box_version = "2.3.1"
+    box.vm.box_download_checksum_type = "sha256"
+    box.vm.box_download_checksum = "af2eeb74791d944d5c366aa8b550957bbbdb85ede435086d803a69e8324d79e6"
+    box.vm.network "private_network", :ip => "192.168.50.21"
+    box.vm.provision "shell", :inline => cross_provision_script
+
+    box.vm.provider "virtualbox" do |v|
+      v.memory = 4096
+    end
+  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 1
+  end
+
+  config.ssh.forward_agent = true
+  config.vm.usable_port_range = 10_000..50_000
+  # Disable vagrant's default synced folder
+  config.vm.synced_folder "./", "/vagrant", :disabled => true
+  config.vm.synced_folder "./rust_lib", "/rust_lib", :type => "nfs"
+end
+
+def cross_provision_script
+  <<-SHELL
+    set -eu
+    apt-get update
+    apt-get install -y \
+      apt-file \
+      apt-transport-https \
+      build-essential \
+      ca-certificates \
+      cmake \
+      curl \
+      file \
+      g++ \
+      git \
+      make \
+      nano \
+      pkg-config \
+      python \
+      ruby \
+      ruby-dev \
+      software-properties-common \
+      xutils-dev \
+      xz-utils \
+      --no-install-recommends
+
+    # Import Docker's GPG key
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo apt-key fingerprint 0EBFCD88
+
+    sudo add-apt-repository \
+      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) \
+      stable"
+
+    sudo apt-get update
+    sudo apt-get install -y docker-ce=17.06.2~ce-0~ubuntu
+
+    # Add current user (vagrant) to docker group
+    # https://techoverflow.net/2017/03/01/solving-docker-permission-denied-while-trying-to-connect-to-the-docker-daemon-socket/
+    sudo usermod -a -G docker vagrant
+
+    rm -rf /var/lib/apt/lists/*
+
+    sudo su -c "curl https://sh.rustup.rs -sSf | sh -s -- -y -v --default-toolchain nightly" vagrant
+
+    gem install bundler
+
+    (>&2 echo "Provision successful!")
+  SHELL
+end

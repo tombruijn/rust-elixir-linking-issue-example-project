@@ -3,5 +3,40 @@
 ## Usage
 
 ```
-./build_and_test
+./build_and_test 1.20.0 0.0.1
+# Works, creates a build and complains about a missing install.log file
+
+./build_and_test 1.21.0 0.0.2
+# Fails, starts app but prints the error listed below
+
+./build_and_test 1.29.1 0.0.3
+# Fails, unrelated error that's already fixed in the latest nightly
+
+./build_and_test nightly-2018-10-08 0.0.4
+# Fails, starts app but prints the error listed below
 ```
+
+## Unexpected error
+
+This error occurs when linking a staticlib with the `x86_64-unknown-linux-musl` target to an Elixir app.
+
+```
+Error loading NIF (host triple: x86_64-pc-linux-musl)
+Error: Failed to load NIF library: 'Error loading shared library libgcc_s.so.1: No such file or directory (needed by /app/lib/elixir_package-0.0.1/priv/elixir_package_extension.so)'
+```
+
+## Build and test process details
+
+1. Build extension
+  - Create a virtual machine (controlled through Vagrant) that will act as the build environment.
+    - Install Docker on this build machine.
+  - With cross, cross compile the extension to musl.
+    - This cannot be done if the host is macOS, which is why we're running this through the virtual build machine.
+2. Install the extension as an Erlang NIF
+  - Move built extension to Elixir package (`elixir_app/elixir_package/c_src`)
+  - Make a app release with distillery.
+    - Compile the Elixir app.
+    - Install the Erlang NIF.
+3. Run the app.
+  - Run the Elixir app with the NIF from the package.
+  - See error.
