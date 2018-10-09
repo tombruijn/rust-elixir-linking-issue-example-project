@@ -17,7 +17,14 @@ else
 fi
 
 cd /rust_lib
+# Install cross if not installed
+which cross || cargo install cross
+
+# Install specified Rust version
 rustup override set $RUST_VERSION
+# Add specified target
 rustup target install $TARGET_TRIPLE
+# Musl build requires this flag for staticlibs
 export RUSTFLAGS='-C target-feature=-crt-static'
+# Build staticlib through cross
 cross build --target=$TARGET_TRIPLE --release --verbose

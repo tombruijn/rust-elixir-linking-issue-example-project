@@ -31,7 +31,6 @@ echo "Creating build machine."
 (
   cd rust_lib
   vagrant up cross
-  vagrant ssh cross -c "which cross || cargo install cross"
 )
 
 rm -rf build
@@ -52,6 +51,10 @@ echo "Building and running Elixir app release."
 export PROJECT_NAME=elixir_app
 (
   cd elixir_app
+  # Build docker image with Elixir app in a two stage setup
+  # First stage compiles the app
+  # Second stage only runs the app
   docker build --build-arg BUILD_VERSION=$BUILD_VERSION -t alpine-elixir-build-test:build .
+  # Run the Elixir app
   docker run -e BUILD_VERSION=$BUILD_VERSION -it --rm alpine-elixir-build-test:build ash
 )
