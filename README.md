@@ -25,10 +25,20 @@ Error loading NIF (host triple: x86_64-pc-linux-musl)
 Error: Failed to load NIF library: 'Error loading shared library libgcc_s.so.1: No such file or directory (needed by /app/lib/elixir_package-0.0.1/priv/elixir_package_extension.so)'
 ```
 
-## Build and test process details
+## Testing
+
+### Requirements
+
+Requirements for running this project on a macOS host machine, see "Build and test process details". This project is not optimized for a Linux host machine, but will run the same.
+
+- [Virtualbox](https://www.virtualbox.org/)
+- [Vagrant](https://www.vagrantup.com/)
+
+### Build and test process details
 
 1. Build extension
   - Create a virtual machine (controlled through Vagrant) that will act as the build environment.
+    - You will be prompted for your password the first time to mount a NFS volume on the virtual machine.
     - Install Docker on this build machine.
   - With cross, cross compile the extension to musl.
     - This cannot be done if the host is macOS, which is why we're running this through the virtual build machine.
