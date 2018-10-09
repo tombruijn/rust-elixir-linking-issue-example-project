@@ -19,7 +19,7 @@ defmodule ElixirPackage.Mixfile do
   end
 
   defp package_url() do
-    "https://github.com/tombruijn/TODO"
+    "https://github.com/tombruijn/rust-elixir-linking-issue-example-project"
   end
 
   defp package do
