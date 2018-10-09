@@ -38,11 +38,11 @@ defmodule ElixirPackage.Mixfile do
   end
 
   def application do
-    [mod: {Appsignal, []}, applications: [:logger]]
+    [mod: {ElixirPackage, []}, applications: [:logger]]
   end
 
-  defp compilers(_), do: [:appsignal] ++ Mix.compilers()
-  defp test_paths(_), do: ["test/appsignal", "test/mix"]
+  defp compilers(_), do: [:elixir_package] ++ Mix.compilers()
+  defp test_paths(_), do: []
 
   defp elixirc_paths(env) do
     case test?(env) do

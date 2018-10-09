@@ -1,4 +1,4 @@
-defmodule AppsignalElixirExample.Mixfile do
+defmodule ElixirApp.Mixfile do
   use Mix.Project
 
   def project do
@@ -16,7 +16,7 @@ defmodule AppsignalElixirExample.Mixfile do
 
   defp deps do
     [
-      {"elixir_package", path: "./elixir_package"}
+      {:elixir_package, path: "./elixir_package"}
     ]
   end
 end

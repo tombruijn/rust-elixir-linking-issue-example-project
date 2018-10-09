@@ -1,5 +1,5 @@
 defmodule ElixirPackage do
-  use Appsignal
+  use Application
   require Logger
 
   def start(_type, _args) do

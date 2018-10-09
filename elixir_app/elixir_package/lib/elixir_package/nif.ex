@@ -13,7 +13,7 @@ defmodule ElixirPackage.Nif do
 
         message = "[#{DateTime.utc_now() |> to_string}] Error loading NIF (host triple: #{arch})\nError: #{reason}\n\n"
 
-        :appsignal
+        :elixir_package
         |> Application.app_dir()
         |> Path.join("install.log")
         |> File.write(message, [:append])
