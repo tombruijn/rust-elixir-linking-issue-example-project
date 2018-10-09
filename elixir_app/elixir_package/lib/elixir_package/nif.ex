@@ -35,11 +35,11 @@ defmodule ElixirPackage.Nif do
   end
 
   def _start do
-    :ok
+    0
   end
 
   def _stop do
-    :ok
+    0
   end
 
   def _loaded do

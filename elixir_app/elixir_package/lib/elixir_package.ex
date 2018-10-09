@@ -5,7 +5,7 @@ defmodule ElixirPackage do
   def start(_type, _args) do
     Logger.debug("ElixirPackage starting.")
 
-    ElixirPackage.Nif.start()
+    IO.puts "NIF says: #{ElixirPackage.Nif.start()} (should be 1)"
 
     if ElixirPackage.Nif.loaded?() do
       Logger.debug("ElixirPackage started.")
@@ -20,6 +20,7 @@ defmodule ElixirPackage do
   end
 
   def stop(_state) do
+    IO.puts "NIF says: #{ElixirPackage.Nif.stop()} (should be 2)"
     Logger.debug("ElixirPackage stopped.")
   end
 end

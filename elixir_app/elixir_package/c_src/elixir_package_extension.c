@@ -11,13 +11,11 @@
 #include <elixir_package_extension.h>
 
 static ERL_NIF_TERM _start(ErlNifEnv* env, int UNUSED(arc), const ERL_NIF_TERM UNUSED(argv[])) {
-  elixir_package_extension_start();
-  return enif_make_atom(env, "ok");
+  return enif_make_int64(env, elixir_package_extension_start());
 }
 
 static ERL_NIF_TERM _stop(ErlNifEnv* env, int UNUSED(arc), const ERL_NIF_TERM UNUSED(argv[])) {
-  elixir_package_extension_stop();
-  return enif_make_atom(env, "ok");
+  return enif_make_int64(env, elixir_package_extension_stop());
 }
 
 static ERL_NIF_TERM _loaded(ErlNifEnv *env, int UNUSED(argc), const ERL_NIF_TERM UNUSED(argv[])) {
