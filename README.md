@@ -1,9 +1,7 @@
 # Rust staticlib linking with Elixir issue example app
 
-## Elixir app
+## Usage
 
 ```
-cd elixir_app
-mix deps.get
-mix run
+./build_and_test
 ```

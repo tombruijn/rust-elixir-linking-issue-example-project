@@ -24,7 +24,7 @@ static ERL_NIF_TERM _loaded(ErlNifEnv *env, int UNUSED(argc), const ERL_NIF_TERM
   return enif_make_atom(env, "true");
 }
 
-static int on_load(ErlNifEnv* env, void** UNUSED(priv), ERL_NIF_TERM UNUSED(info)) {
+static int on_load(ErlNifEnv* UNUSED(env), void** UNUSED(priv), ERL_NIF_TERM UNUSED(info)) {
   return 0;
 }
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+(
+  cd rust_lib
+  cargo build --release
+)
+
+cp rust_lib/target/release/libelixir_package_extension.a elixir_app/elixir_package/c_src
+
+(
+  cd elixir_app
+  mix deps.get
+  mix run
+)

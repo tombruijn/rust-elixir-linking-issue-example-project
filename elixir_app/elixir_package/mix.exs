@@ -54,3 +54,60 @@ defmodule ElixirPackage.Mixfile do
   defp test?(:test), do: true
   defp test?(_), do: false
 end
+
+defmodule Mix.Tasks.Compile.ElixirPackage do
+  use Mix.Task
+
+  def run(_args) do
+    :ok = compile()
+  end
+
+  defp compile do
+    System.put_env("LIB_DIR", priv_dir())
+    File.mkdir_p!(priv_dir())
+    clean_up_extension_files()
+    Enum.each(["elixir_package_extension.h", "libelixir_package_extension.a"], fn(file) ->
+      File.cp(project_ext_path(file), priv_path(file))
+    end)
+
+    {result, error_code} = System.cmd("make", [])
+    IO.binwrite(result)
+
+    if error_code != 0 do
+      raise Mix.Error, message: """
+      Could not run `make`. Please check if `make` and either `clang` or `gcc` are installed
+      """
+    end
+    :ok
+  end
+
+  defp clean_up_extension_files do
+    priv_dir()
+    |> Path.join("*elixir_package*")
+    |> Path.wildcard
+    |> Enum.each(&File.rm_rf!/1)
+  end
+
+  defp project_ext_path(filename) do
+    Path.join([__DIR__, "c_src", filename])
+  end
+
+  defp priv_path(filename) do
+    Path.join(priv_dir(), filename)
+  end
+
+  defp priv_dir() do
+    case :code.priv_dir(:elixir_package) do
+      {:error, :bad_name} ->
+        # This happens on initial compilation
+        Mix.Tasks.Compile.Erlang.manifests
+        |> List.first
+        |> Path.dirname
+        |> String.trim_trailing(".mix")
+        |> Path.join("priv")
+      path ->
+        path
+        |> List.to_string
+    end
+  end
+end
