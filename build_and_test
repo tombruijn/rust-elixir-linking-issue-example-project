@@ -1,14 +1,40 @@
 #!/bin/bash
 
+if [[ -n "$1" ]]; then
+  RUST_VERSION="$1"
+else
+  echo "Error: No Rust version set."
+  echo
+  echo "Usage:"
+  echo "  ./build_and_test <version>"
+  echo "  ./build_and_test 1.10.0"
+  exit 1
+fi
+
+rm -rf build
+mkdir build
+
 (
   cd rust_lib
+  rustup override set $RUST_VERSION
   cargo build --release
 )
 
 cp rust_lib/target/release/libelixir_package_extension.a elixir_app/elixir_package/c_src
 
+export PROJECT_NAME=elixir_app
 (
   cd elixir_app
+
+  export MIX_ENV=prod
+  export BUILD_VERSION=0.0.1
   mix deps.get
-  mix run
+  mix release
+  cp _build/prod/rel/$PROJECT_NAME/releases/$BUILD_VERSION/$PROJECT_NAME.tar.gz ../build/
+)
+
+(
+  cd build
+  tar -zxvf $PROJECT_NAME.tar.gz; rm $PROJECT_NAME.tar.gz
+  ./bin/$PROJECT_NAME foreground
 )

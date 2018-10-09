@@ -3,7 +3,7 @@ defmodule ElixirApp.Mixfile do
 
   def project do
     [app: :elixir_app,
-     version: "0.1.0",
+     version: version(),
      elixir: "~> 1.7",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -16,7 +16,12 @@ defmodule ElixirApp.Mixfile do
 
   defp deps do
     [
+      {:distillery, "~> 2.0"},
       {:elixir_package, path: "./elixir_package"}
     ]
+  end
+
+  defp version() do
+    System.get_env("BUILD_VERSION") || "0.0.1"
   end
 end
