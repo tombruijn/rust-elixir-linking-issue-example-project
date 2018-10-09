@@ -15,6 +15,8 @@ defmodule AppsignalElixirExample.Mixfile do
   end
 
   defp deps do
-    []
+    [
+      {"elixir_package", path: "./elixir_package"}
+    ]
   end
 end

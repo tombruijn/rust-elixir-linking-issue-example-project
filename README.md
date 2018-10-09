@@ -4,5 +4,6 @@
 
 ```
 cd elixir_app
+mix deps.get
 mix run
 ```
