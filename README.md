@@ -2,17 +2,31 @@
 
 ## Usage
 
+```sh
+./build_and_test <Rust version>
 ```
-./build_and_test 1.20.0 0.0.1
+
+- The Rust version is the version of the [Rust language](https://rust-lang.org/) to test against. It will automatically install it.
+
+**Note**: This process will create a new Docker image per build. Be sure to clean them after you're done testing.
+
+```sh
+docker rmi alpine-elixir-build-test:build
+```
+
+### Examples
+
+```sh
+./build_and_test 1.20.0
 # Works, creates a build and complains about a missing install.log file
 
-./build_and_test 1.21.0 0.0.2
+./build_and_test 1.21.0
 # Fails, starts app but prints the error listed below
 
-./build_and_test 1.29.1 0.0.3
+./build_and_test 1.29.1
 # Fails, unrelated error that's already fixed in the latest nightly
 
-./build_and_test nightly-2018-10-08 0.0.4
+./build_and_test nightly-2018-10-08
 # Fails, starts app but prints the error listed below
 ```
 
@@ -37,16 +51,16 @@ Requirements for running this project on a macOS host machine, see "Build and te
 ### Build and test process details
 
 1. Build extension
-  - Create a virtual machine (controlled through Vagrant) that will act as the build environment.
-    - You will be prompted for your password the first time to mount a NFS volume on the virtual machine.
-    - Install Docker on this build machine.
-  - With cross, cross compile the extension to musl.
-    - This cannot be done if the host is macOS, which is why we're running this through the virtual build machine.
+    - Create a virtual machine (controlled through Vagrant) that will act as the build environment.
+      - You will be prompted for your password the first time to mount a NFS volume on the virtual machine.
+      - Install Docker on this build machine.
+    - With cross, cross compile the extension to musl.
+      - This cannot be done if the host is macOS, which is why we're running this through the virtual build machine.
 2. Install the extension as an Erlang NIF
-  - Move built extension to Elixir package (`elixir_app/elixir_package/c_src`)
-  - Make a app release with distillery.
-    - Compile the Elixir app.
-    - Install the Erlang NIF.
+    - Move built extension to Elixir package (`elixir_app/elixir_package/c_src`)
+    - Make a app release with distillery.
+      - Compile the Elixir app.
+      - Install the Erlang NIF.
 3. Run the app.
-  - Run the Elixir app with the NIF from the package.
-  - See error.
+    - Run the Elixir app with the NIF from the package.
+    - See error.
