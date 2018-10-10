@@ -6,19 +6,21 @@
 ./build_and_test <Rust version>
 ```
 
-- The Rust version is the version of the [Rust language](https://rust-lang.org/) to test against. It will automatically install it.
+- `<Rust version>`: The Rust version is the version of the [Rust language](https://rust-lang.org/) to test against. It will automatically install it.
 
-**Note**: This process will create a new Docker image per build. Be sure to clean them after you're done testing.
+This testing tool will follow the process described in "Build and test process details" below. Afterwards it will open a shell in which the user can do additional debugging, such as:
 
 ```sh
-docker rmi alpine-elixir-build-test:build
+./bin/elixir_app stop                    # Stop application that's currently running
+./bin/elixir_app foreground              # Run application in foreground
+cat lib/elixir_package-0.0.1/install.log # Print install log file with error (if present)
 ```
 
 ### Examples
 
 ```sh
 ./build_and_test 1.20.0
-# Works, creates a build and complains about a missing install.log file
+# Works, creates a build and complains about a missing install.log file, which is fine
 
 ./build_and_test 1.21.0
 # Fails, starts app but prints the error listed below
@@ -63,4 +65,13 @@ Requirements for running this project on a macOS host machine, see "Build and te
       - Install the Erlang NIF.
 3. Run the app.
     - Run the Elixir app with the NIF from the package.
-    - See error.
+    - The error will be printed as the `install.log` file is read.
+      - If this file is not present it will warn it cannot be found. Which is good.
+
+### Clean up
+
+**Note**: This testing process will create a new Docker image per build. Be sure to clean them after you're done testing.
+
+```sh
+docker rmi alpine-elixir-build-test:build
+```
