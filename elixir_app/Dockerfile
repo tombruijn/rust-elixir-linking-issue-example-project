@@ -1,11 +1,8 @@
 FROM bitwalker/alpine-elixir:1.7.3 AS builder
 ARG BUILD_VERSION
 
-ENV LANG=en_US.UTF-8 \
-    LC_ALL="en_US.utf8"\
-    HOME=/app \
+ENV HOME=/app \
     TERM=xterm\
-    LANGUAGE="en_US.UTF-8" \
     MIX_ENV=prod \
     REPLACE_OS_VARS=true \
     PROJECT_NAME=elixir_app
