@@ -1,3 +1,5 @@
+# First build stage
+# This will compile and package the app as a release
 FROM bitwalker/alpine-elixir:1.7.3 AS builder
 ARG BUILD_VERSION
 
@@ -34,10 +36,13 @@ COPY rel rel
 
 RUN mix do compile
 
+# Create a release
 RUN MIX_ENV=prod mix release
 RUN mv ${HOME}/_build/prod/rel/$PROJECT_NAME/releases/$BUILD_VERSION/$PROJECT_NAME.tar.gz /build.tar.gz
 RUN rm -rf ${HOME}
 
+# Second build stage
+# This image doesn't have the build dependencies installed
 FROM bitwalker/alpine-elixir:1.7.3
 ARG BUILD_VERSION
 
@@ -48,13 +53,15 @@ ENV PROJECT_NAME=elixir_app \
 WORKDIR ${HOME}
 
 RUN mkdir -p ${HOME}
-RUN apk add --update screen curl erlang-tools
+# Add useful tools
+RUN apk add --update screen curl
 
 COPY --from=builder /build.tar.gz ${HOME}/build.tar.gz
 
 RUN tar -zxvf build.tar.gz; rm build.tar.gz
 
 WORKDIR ${HOME}
+# Add a convenience run script that opens a console after starting the app
 RUN printf "#!/bin/ash\n./bin/elixir_app start; sleep 5; cat lib/elixir_package-0.0.1/install.log; ash" > ${HOME}/run && chmod +x ${HOME}/run
 
 ENTRYPOINT ["./run"]
