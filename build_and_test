@@ -2,7 +2,6 @@
 
 set -eu
 
-
 if [[ -n "${1-}" ]]; then
   RUST_VERSION="$1"
 else
@@ -15,8 +14,7 @@ else
 fi
 
 BUILD_VERSION=$(date -u +"0.0.%s")
-
-export TARGET_TRIPLE=x86_64-unknown-linux-musl
+TARGET_TRIPLE=x86_64-unknown-linux-musl
 
 echo
 echo "Creating build machine."
@@ -40,7 +38,6 @@ cp rust_lib/target/$TARGET_TRIPLE/release/libelixir_package_extension.a elixir_a
 
 echo
 echo "Building and running Elixir app release."
-export PROJECT_NAME=elixir_app
 (
   cd elixir_app
   # Build docker image with Elixir app in a two stage setup

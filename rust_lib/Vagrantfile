@@ -34,16 +34,12 @@ def cross_provision_script
       build-essential \
       ca-certificates \
       cmake \
-      curl \
       file \
       g++ \
       git \
       make \
-      nano \
       pkg-config \
       python \
-      ruby \
-      ruby-dev \
       software-properties-common \
       xutils-dev \
       xz-utils \
@@ -68,8 +64,6 @@ def cross_provision_script
     rm -rf /var/lib/apt/lists/*
 
     sudo su -c "curl https://sh.rustup.rs -sSf | sh -s -- -y -v --default-toolchain nightly" vagrant
-
-    gem install bundler
 
     (>&2 echo "Provision successful!")
   SHELL
