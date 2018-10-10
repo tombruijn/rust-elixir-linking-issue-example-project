@@ -52,19 +52,26 @@ Requirements for running this project on a macOS host machine, see "Build and te
 
 ### Build and test process details
 
+The following steps describe the automated process this project performs. No manual steps required.
+
 1. Build extension
     - Create a virtual machine (controlled through Vagrant) that will act as the build environment.
       - You will be prompted for your password the first time to mount a NFS volume on the virtual machine.
       - Install Docker on this build machine.
     - With cross, cross compile the extension to musl.
       - This cannot be done if the host is macOS, which is why we're running this through the virtual build machine.
-2. Install the extension as an Erlang NIF
+2. Install the extension as an Erlang [NIF](http://erlang.org/doc/man/erl_nif.html)
     - Move built extension to Elixir package (`elixir_app/elixir_package/c_src`)
-    - Make a app release with distillery.
+    - Start a Docker image build process that compiles the Elixir app.
+      - Start the first stage that compiles the app.
+    - Make an app release with [distillery](https://github.com/bitwalker/distillery).
       - Compile the Elixir app.
       - Install the Erlang NIF.
+      - Package the release as a zip.
 3. Run the app.
-    - Run the Elixir app with the NIF from the package.
+    - Create a second stage for the release in which the app is run. This is a slimmer version of the Docker image than the build stage. This does not include the compilation dependencies from the first stage.
+      - Copy and extract the zip file from the first stage.
+    - Run the Elixir app release (including the NIF).
     - The error will be printed as the `install.log` file is read.
       - If this file is not present it will warn it cannot be found. Which is good.
 
