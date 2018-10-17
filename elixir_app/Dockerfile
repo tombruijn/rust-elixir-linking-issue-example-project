@@ -52,8 +52,6 @@ ENV PROJECT_NAME=elixir_app \
 WORKDIR ${HOME}
 
 RUN mkdir -p ${HOME}
-# Add useful tools
-RUN apk add --update screen curl
 
 ARG BUILD_VERSION
 COPY --from=builder /build.tar.gz ${HOME}/build.tar.gz
