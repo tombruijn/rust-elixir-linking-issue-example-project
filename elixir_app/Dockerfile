@@ -62,6 +62,6 @@ RUN tar -zxvf build.tar.gz; rm build.tar.gz
 
 WORKDIR ${HOME}
 # Add a convenience run script that opens a console after starting the app
-RUN printf "#!/bin/ash\n./bin/elixir_app start; sleep 5; cat lib/elixir_package-0.0.1/install.log; ash" > ${HOME}/run && chmod +x ${HOME}/run
+RUN printf "#!/bin/ash\n./bin/elixir_app foreground &\nsleep 5\ncat lib/elixir_package-0.0.1/install.log; ash" > ${HOME}/run && chmod +x ${HOME}/run
 
 ENTRYPOINT ["./run"]
