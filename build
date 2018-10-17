@@ -13,7 +13,6 @@ else
   exit 1
 fi
 
-BUILD_VERSION=$(date -u +"0.0.%s")
 TARGET_TRIPLE=x86_64-unknown-linux-musl
 
 echo
@@ -22,9 +21,6 @@ echo "Creating build machine."
   cd rust_lib
   vagrant up cross
 )
-
-rm -rf build
-mkdir build
 
 echo
 echo "Building Rust extension."
@@ -35,15 +31,3 @@ echo "Building Rust extension."
 
 rm -f elixir_app/elixir_package/c_src/libelixir_package_extension.a
 cp rust_lib/target/$TARGET_TRIPLE/release/libelixir_package_extension.a elixir_app/elixir_package/c_src
-
-echo
-echo "Building and running Elixir app release."
-(
-  cd elixir_app
-  # Build docker image with Elixir app in a two stage setup
-  # First stage compiles the app
-  # Second stage only runs the app
-  docker build --build-arg BUILD_VERSION=$BUILD_VERSION -t alpine-elixir-build-test:build .
-  # Run the Elixir app
-  docker run -e BUILD_VERSION=$BUILD_VERSION -it --rm alpine-elixir-build-test:build ash
-)

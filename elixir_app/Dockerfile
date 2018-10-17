@@ -1,7 +1,6 @@
 # First build stage
 # This will compile and package the app as a release
 FROM bitwalker/alpine-elixir:1.7.3 AS builder
-ARG BUILD_VERSION
 
 ENV HOME=/app \
     TERM=xterm\
@@ -25,6 +24,7 @@ RUN apk update && \
     mix do local.hex --force && \
     mix do local.rebar --force
 
+ARG BUILD_VERSION
 COPY elixir_package elixir_package
 COPY mix.exs mix.exs
 COPY mix.lock mix.lock
@@ -44,7 +44,6 @@ RUN rm -rf ${HOME}
 # Second build stage
 # This image doesn't have the build dependencies installed
 FROM bitwalker/alpine-elixir:1.7.3
-ARG BUILD_VERSION
 
 ENV PROJECT_NAME=elixir_app \
     HOME=/app \
@@ -53,15 +52,14 @@ ENV PROJECT_NAME=elixir_app \
 WORKDIR ${HOME}
 
 RUN mkdir -p ${HOME}
-# Add useful tools
-RUN apk add --update screen curl
 
+ARG BUILD_VERSION
 COPY --from=builder /build.tar.gz ${HOME}/build.tar.gz
 
 RUN tar -zxvf build.tar.gz; rm build.tar.gz
 
 WORKDIR ${HOME}
 # Add a convenience run script that opens a console after starting the app
-RUN printf "#!/bin/ash\n./bin/elixir_app start; sleep 5; cat lib/elixir_package-0.0.1/install.log; ash" > ${HOME}/run && chmod +x ${HOME}/run
+RUN printf "#!/bin/ash\n./bin/elixir_app foreground &\nsleep 5\ncat lib/elixir_package-0.0.1/install.log; ash" > ${HOME}/run && chmod +x ${HOME}/run
 
 ENTRYPOINT ["./run"]
