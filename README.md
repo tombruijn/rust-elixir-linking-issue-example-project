@@ -3,10 +3,15 @@
 ## Usage
 
 ```sh
-./build_and_test <Rust version>
+./build <Rust version>
+./test
 ```
 
-- `<Rust version>`: The Rust version is the version of the [Rust language](https://rust-lang.org/) to test against. It will automatically install it.
+- `./build`
+    - Builds the Rust library.
+    - `<Rust version>`: The Rust version is the version of the [Rust language](https://rust-lang.org/) to test against. It will automatically install it.
+- `./test`
+    - Load the Rust library into the Elixir app and test it.
 
 This testing tool will follow the process described in "Build and test process details" below. Afterwards it will open a shell in which the user can do additional debugging, such as:
 
@@ -19,16 +24,16 @@ cat lib/elixir_package-0.0.1/install.log # Print install log file with error (if
 ### Examples
 
 ```sh
-./build_and_test 1.20.0
+./build 1.20.0 && ./test
 # Works, creates a build and complains about a missing install.log file, which is fine
 
-./build_and_test 1.21.0
+./build 1.21.0 && ./test
 # Fails, starts app but prints the error listed below
 
-./build_and_test 1.29.1
+./build 1.29.1 && ./test
 # Fails, unrelated error that's already fixed in the latest nightly
 
-./build_and_test nightly-2018-10-08
+./build nightly-2018-10-08 && ./test
 # Fails, starts app but prints the error listed below
 ```
 

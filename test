@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eu
+
+BUILD_VERSION=$(date -u +"0.0.%s")
+
+echo
+echo "Building and running Elixir app release."
+(
+  cd elixir_app
+  # Build docker image with Elixir app in a two stage setup
+  # First stage compiles the app
+  # Second stage only runs the app
+  docker build -f Dockerfile.gnu --build-arg BUILD_VERSION=$BUILD_VERSION -t elixir-build-test:build .
+  # Run the Elixir app
+  docker run -e BUILD_VERSION=$BUILD_VERSION -it --rm elixir-build-test:build ash
+)
